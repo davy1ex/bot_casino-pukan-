@@ -10,10 +10,7 @@ while True:
     for event in lp.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me and "!" in event.text and event.from_chat:
             print(event.type, event.raw)
-            # vk.messages.send(user_id = event.user_id, message = event.text, forward_messages = event.message_id)
-            # vk.messages.send(user_id=event.user_id, message=event.text, forward_messages=event.message_id, attachment = random.choice(["photo454998286_456239110", "photo454998286_456239111"]))
             text = event.text
-
             if "новая игра" in text:
                 database = []
                 for user_id in vk.messages.getChatUsers(chat_id=event.chat_id):
@@ -46,9 +43,6 @@ while True:
                                              message="нормальную ставку ставь",
                                              forward_messages=event.message_id)
                             continue
-                        # for user in database:
-                        #     if event.user_id == user["user_id"]:
-                        #         coins_user = int(user["score"])
                         totals = random.randrange(101)
                         print(totals)
                         if totals > 50:
@@ -56,13 +50,20 @@ while True:
                             for user in database:
                                 if event.user_id == user["user_id"]:
                                     if int(database[n]["score"]) >= rate:
-                                        coins_user = int(database[n]["score"]) + rate * 2
-                                        database[n]["score"] = int(database[n]["score"]) + rate*2
+                                        if rate > 0:
+                                            coins_user = int(database[n]["score"]) + rate * 2
+                                            database[n]["score"] = int(database[n]["score"]) + rate*2
 
-                                        vk.messages.send(chat_id=event.chat_id,
-                                                         message="выпало {0}, поздравляю\n"
-                                                                 "теперь твой счёт {1}".format(totals, coins_user),
-                                                         forward_messages=event.message_id)
+                                            vk.messages.send(chat_id=event.chat_id,
+                                                             message="выпало {0}, поздравляю\n"
+                                                                     "теперь твой счёт {1}".format(totals, coins_user),
+                                                             forward_messages=event.message_id)
+
+                                        else:
+                                            vk.messages.send(chat_id=event.chat_id,
+                                                             message="Ты кого обманывать тут вздумал?",
+                                                             forward_messages=event.message_id)
+
                                     else:
                                         vk.messages.send(chat_id=event.chat_id,
                                                          message="у тебя нет столько",
@@ -70,10 +71,6 @@ while True:
                                         continue
 
                                 n+=1
-                            # coins_user *= 2
-                            # for user in database:
-                            #     if event.user_id == user["user_id"]:
-                            #         user["score"] = coins_user
 
                         else:
                             n = 0
@@ -117,6 +114,7 @@ while True:
                                         vk.messages.send(chat_id=event.chat_id,
                                                          message="готово, теперь у тебя {0}".format(user["score"]),
                                                          forward_messages=event.message_id)
+
                         else:
                             vk.messages.send(chat_id=event.chat_id,
                                              message= "словил ошибку, либо нет пароля, либо нет суммы",
@@ -143,6 +141,7 @@ while True:
                 vk.messages.send(chat_id=event.chat_id,
                                  message=text,
                                  forward_messages=event.message_id)
+
             else:
                 vk.messages.send(chat_id=event.chat_id,
                                  message="нет сессии",
